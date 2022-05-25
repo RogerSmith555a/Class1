@@ -1,18 +1,34 @@
 ﻿
+using ScheduleApi.Adapters;
+
 namespace ScheduleApi.Controllers;
 
 [Route("schedule")]
 public class ScheduleController : ControllerBase
 {
+    private readonly ScheduleAdapter _adapter;
 
+    public ScheduleController(ScheduleAdapter adapter)
+    {
+        _adapter = adapter;
+    }
     // GET /schedule/938983983hsdjfh
 
     [HttpGet("{courseId}")]
     public async Task<ActionResult<ScheduleResponse>> GetCourseById(string courseId)
     {
-        var response = new ScheduleResponse();
+        var adapter = new ScheduleAdapter();
+        var data = adapter.GetForClass(courseId);
+        if (data ==null)
+        {
+            return NotFound();
+        }
+        //var response = NotFound();     //This is bad need to fix.
+        var response = new ScheduleResponse() { CourseId = courseId };
 
-        response.Data.Add(new ScheduleItem { StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(3) });
+        //var response = new ScheduleResponse();
+
+        //response.Data.Add(new ScheduleItem { StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(3) });
         return Ok(response);
     }
 }
